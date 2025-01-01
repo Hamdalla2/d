@@ -1,0 +1,98 @@
+* {
+  box-sizing: border-box;
+  text-decoration: none;
+  outline: none;
+  padding: 0;
+  margin: 0;
+  color: black;
+  caret-color: black;
+  outline: none;
+  text-align: left;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20 px;
+}
+
+html,
+body {
+  min-height: 100vh;
+  overflow: hidden;
+  height: 100vh;
+}
+
+button,
+input[type=button],
+input[type=submit],
+input[type=password],
+input[type=text] {
+  background-color: royalblue;
+  border: 3px solid blue;
+  border-radius: 33px;
+  width: 100px;
+  height: 40px;
+  margin: 10px;
+  font-size: 16px;
+  line-height: 20px;
+  text-align: center;
+}
+
+button:hover,
+input[type=button]:hover,
+input[type=submit]:hover,
+input[type=password]:hover,
+input[type=text]:hover {
+  background-color: cornflowerblue;
+}
+
+button:active,
+input[type=button]:active,
+input[type=submit]:active {
+  transform: translateY(3px);
+}
+
+button:focus,
+input[type=button]:focus,
+input[type=submit]:focus,
+input[type=password]:focus,
+input[type=text]:focus {
+  box-shadow: 0 0 30px red;
+}
+
+input[type=password],
+input[type=text] {
+  background-color: transparent;
+  color: yellow;
+}
+
+input[type=password]::placeholder,
+input[type=text]::placeholder {
+  color: gray;
+}
+
+#root,
+.app,
+.container {
+  height: 100%;
+}
+
+.flex {
+  display: flex;
+}
+
+.row {
+  flex-flow: row;
+}
+
+.col {
+  flex-flow: column;
+}
+
+.center {
+  align-items: center;
+  justify-content: center;
+}
+
+.space {
+  align-items: center;
+  justify-content: space-around;
+}
