@@ -10,14 +10,32 @@
   text-align: left;
   font-weight: 500;
   font-size: 16px;
-  line-height: 20 px;
+  line-height: 20px;
 }
 
 html,
 body {
   min-height: 100vh;
+  max-height: 100vh;
   overflow: hidden;
-  height: 100vh;
+  height: fit-content;
+  background-color: #ccc;
+}
+
+.page {
+  max-height: calc(100vh - 122px);
+  overflow: auto;
+  margin-top: 80px;
+  padding: 15px;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+    background-color: #aaa;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #666;
+  }
 }
 
 button,
@@ -41,6 +59,7 @@ input[type=button]:hover,
 input[type=submit]:hover,
 input[type=password]:hover,
 input[type=text]:hover {
+  cursor: pointer;
   background-color: cornflowerblue;
 }
 
@@ -73,6 +92,7 @@ input[type=text]::placeholder {
 .app,
 .container {
   height: 100%;
+  max-height: 100vh;
 }
 
 .flex {
@@ -95,4 +115,31 @@ input[type=text]::placeholder {
 .space {
   align-items: center;
   justify-content: space-around;
+}
+
+img:hover {
+  opacity: 0.7;
+}
+
+header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid black;
+  background-color: white;
+  justify-content: space-between;
+  padding: 10px 15px;
+}
+
+footer {
+  background-color: white;
+  border-top: 1px solid black;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  padding: 10px 15px;
 }
