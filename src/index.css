@@ -17,8 +17,8 @@ html,
 body {
   min-height: 100vh;
   max-height: 100vh;
+  height: 100vh;
   overflow: hidden;
-  height: fit-content;
   background-color: #ccc;
 }
 
@@ -26,6 +26,7 @@ body {
   max-height: calc(100vh - 122px);
   overflow: auto;
   margin-top: 80px;
+  height: 100%;
   padding: 15px;
 
   &::-webkit-scrollbar {
@@ -43,44 +44,64 @@ input[type=button],
 input[type=submit],
 input[type=password],
 input[type=text] {
-  background-color: royalblue;
-  border: 3px solid blue;
+  background-color: cornflowerblue;
   border-radius: 33px;
-  width: 100px;
+  width: 100%;
+  max-width: 500px;
   height: 40px;
   margin: 10px;
   font-size: 16px;
   line-height: 20px;
+  cursor: pointer;
   text-align: center;
+}
+
+button {
+  width: 100px;
+  color: black;
 }
 
 button:hover,
 input[type=button]:hover,
 input[type=submit]:hover,
 input[type=password]:hover,
-input[type=text]:hover {
-  cursor: pointer;
-  background-color: cornflowerblue;
+input[type=text]:hover,
+img:hover {
+  opacity: 0.7;
 }
 
 button:active,
 input[type=button]:active,
-input[type=submit]:active {
+input[type=submit]:active,
+img:active {
   transform: translateY(3px);
 }
 
 button:focus,
 input[type=button]:focus,
 input[type=submit]:focus,
+img:focus {
+  box-shadow: 0 0 30px red;
+}
+
 input[type=password]:focus,
 input[type=text]:focus {
-  box-shadow: 0 0 30px red;
+  box-shadow: 0 0 30px gold;
 }
 
 input[type=password],
 input[type=text] {
   background-color: transparent;
-  color: yellow;
+  color: blue;
+
+}
+
+.correct.correct.correct {
+  color: green;
+}
+
+.error.error.error {
+  color: red;
 }
 
 input[type=password]::placeholder,
@@ -117,10 +138,6 @@ input[type=text]::placeholder {
   justify-content: space-around;
 }
 
-img:hover {
-  opacity: 0.7;
-}
-
 header {
   position: fixed;
   top: 0;
@@ -142,4 +159,10 @@ footer {
   right: 0;
   left: 0;
   padding: 10px 15px;
+}
+
+.spacer {
+  margin-top: 20px;
+  width: 100%;
+  height: 0;
 }

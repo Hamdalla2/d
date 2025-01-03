@@ -1,7 +1,7 @@
 
 function Footer() {
-    return <footer>
-        footer
+    return <footer style={{ textAlign: "right" }}>
+        Created by Hamdallah Fatayer
     </footer>;
 }
 
