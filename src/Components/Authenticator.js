@@ -15,5 +15,5 @@ export const validateToken = () => {
 
 
 export const isAuthenticated = (user) => {
-    return validateToken();
+    return validateToken() && user;
 };

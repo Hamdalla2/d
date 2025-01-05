@@ -9,7 +9,7 @@ function AccountPage() {
     }
 
     return <div className="page">
-        <button type="button" onClick={() => { signout() }}>Sign Out</button>
+        <button onClick={() => { signout() }}>Sign Out</button>
     </div>;
 }
 

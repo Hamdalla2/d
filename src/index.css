@@ -40,6 +40,7 @@ body {
 }
 
 button,
+input,
 input[type=button],
 input[type=submit],
 input[type=password],
@@ -49,7 +50,7 @@ input[type=text] {
   width: 100%;
   max-width: 500px;
   height: 40px;
-  margin: 10px;
+  margin: 0;
   font-size: 16px;
   line-height: 20px;
   cursor: pointer;
@@ -81,7 +82,7 @@ button:focus,
 input[type=button]:focus,
 input[type=submit]:focus,
 img:focus {
-  box-shadow: 0 0 30px red;
+  box-shadow: 0 0 30px blue;
 }
 
 input[type=password]:focus,
@@ -94,6 +95,7 @@ input[type=text] {
   background-color: transparent;
   color: blue;
   appearance: none;
+  cursor: text;
 }
 
 input:-webkit-autofill,
@@ -188,4 +190,8 @@ footer {
   margin-top: 20px;
   width: 100%;
   height: 0;
+}
+
+.header-link {
+  margin: 10px;
 }

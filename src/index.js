@@ -1,8 +1,9 @@
-import React from 'react';
+import axios from 'axios';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
-import { Provider, useSelector } from 'react-redux';
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { isAuthenticated } from './Components/Authenticator';
+import { isAuthenticated, validateToken } from './Components/Authenticator';
 import './index.css';
 import AccountPage from './Pages/AccountPage';
 import AddPage from './Pages/AddPage';
@@ -15,11 +16,20 @@ import PatientsListPage from './Pages/PatientsListPage';
 import SignInPage from './Pages/SignInPage';
 import TodayPage from './Pages/TodayPage';
 import store from './Redux/store';
+import { setCurrentUser } from './Redux/user';
 
 export default function App() {
-  const token = localStorage.getItem('token');
-  const user = useSelector((state) => state.user.user)
-  const authenticated = isAuthenticated(user);
+  const user = useSelector((state) => state.userReducer?.user)
+  const authenticated = isAuthenticated(user)
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (validateToken() && !authenticated) {
+      axios.get(`${process.env.REACT_APP_API_URI}/user`, { headers: { token: localStorage.getItem('token') } })
+        .then(function (response) { dispatch(setCurrentUser(response.data.user)); })
+        .catch(function (error) { });
+    }
+  }, [dispatch, authenticated])
 
   return (
     <div className="app">
