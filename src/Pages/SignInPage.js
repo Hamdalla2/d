@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useNavigate } from "react-router-dom";
-import { signIn } from '../Redux/user';
+import { setCurrentUser } from '../Redux/user';
 
 function SignInPage() {
     const [account, setAccount] = useState("");
@@ -17,9 +17,10 @@ function SignInPage() {
     const signInClicked = (e) => {
         e.preventDefault();
         setErrorType("")
-        axios.post("http://localhost:5000/api/users/login", { email: account, password })
+        axios.post(`${process.env.REACT_APP_API_URI}/login`, { email: account, password })
             .then(function (response) {
-                localStorage.setItem("token", response.data.token); dispatch(signIn(response.data.token)); navigate("/");
+                setErrorType("none"); localStorage.setItem("token", response.data.token);
+                dispatch(setCurrentUser(response.data.user)); navigate("/today");
             })
             .catch(function (error) { setMessage(error.response.data.msg); setErrorType(error.response.data.type); });
     }
@@ -27,9 +28,11 @@ function SignInPage() {
     useEffect(() => {
         if (errorType === "account") {
             accountInput.current.className = "error"
-        } else {
+        } else if (errorType === "password") {
             accountInput.current.className = "correct";
-            passwordInput.current.className = errorType === "password" ? "error" : "correct";
+            passwordInput.current.className = "error"
+        } else if (errorType === "none") {
+            accountInput.current.className = passwordInput.current.className = "correct";
         }
     }, [errorType])
 

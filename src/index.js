@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { isAuthenticated } from './Components/Authenticator';
 import './index.css';
 import AccountPage from './Pages/AccountPage';
 import AddPage from './Pages/AddPage';
@@ -16,19 +17,22 @@ import TodayPage from './Pages/TodayPage';
 import store from './Redux/store';
 
 export default function App() {
+  const token = localStorage.getItem('token');
+  const user = useSelector((state) => state.user.user)
+  const authenticated = isAuthenticated(user);
+
   return (
     <div className="app">
       <BrowserRouter>
         <Header />
         <Routes>
-          <Route index path="/" element={<HomePage />}></Route>
+          <Route index path="/" element={authenticated ? <AccountPage /> : <SignInPage />}></Route>
+          <Route path="/home" element={<HomePage />}></Route>
           <Route path="/add" element={<AddPage />}></Route>
-          <Route path="/signin" element={<SignInPage />}></Route>
           <Route path="/today" element={<TodayPage />}></Route>
           <Route path="/calendar" element={<CalendarPage />}></Route>
           <Route path="/patients" element={<PatientsListPage />}></Route>
           <Route path="/patient" element={<PatientDetailsPage />}></Route>
-          <Route path="/account" element={<AccountPage />}></Route>
         </Routes>
         <Footer />
       </BrowserRouter>

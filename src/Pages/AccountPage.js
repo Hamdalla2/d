@@ -1,13 +1,11 @@
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { signIn } from "../Redux/user";
+import { setCurrentUser } from "../Redux/user";
 
 function AccountPage() {
-    const navigate = useNavigate()
     const dispatch = useDispatch()
 
     const signout = () => {
-        localStorage.removeItem('token'); dispatch(signIn("")); navigate("/signin");
+        localStorage.removeItem('token'); dispatch(setCurrentUser(null));
     }
 
     return <div className="page">
