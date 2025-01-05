@@ -98,6 +98,10 @@ input[type=text] {
   cursor: text;
 }
 
+input[readonly] {
+  background-color: red;
+}
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
