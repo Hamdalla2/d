@@ -32,8 +32,8 @@ function TodayPage() {
         // dispatch(setToday());
     }
 
-    const removeTime = () => {
-
+    const removeTime = (time) => {
+        delete times[time];
     }
 
     return <div className="page" style={{ display: "flex", alignItems: "center", flexFlow: "column" }}>
@@ -42,13 +42,13 @@ function TodayPage() {
             (Object.values(times).map(({ time, patient, phone }, i) =>
                 <div key={i} style={{ display: "flex", alignItems: "center", flexFlow: "row", gap: "15px", width: "100%" }}>
                     <label htmlFor="today_time">Time</label>
-                    <input id="today_time" type="text" value={time} readonly></input>
-                    <label htmlFor="today_name">Name</label>
-                    <input id="today_name" type="text" value={patient} readonly></input>
+                    <input id="today_time" type="text" value={time} readOnly></input>
+                    <label htmlFor="today_patient">Patient</label>
+                    <input id="today_patient" type="text" value={patient} readOnly></input>
                     <label htmlFor="today_phone">Phone</label>
-                    <input id="today_phone" type="text" value={phone} readonly></input>
-                    <input type="button" style={{ backgroundColor: "lime", fontSize: "22px", lineHeight: "24px", paddingTop: "2px" }} value="✔" onClick={addToday} />
-                    <input type="button" style={{ backgroundColor: "tomato", fontSize: "28px", lineHeight: "30px", paddingBottom: "4px" }} value="x" onClick={(e) => removeTime(e)} />
+                    <input id="today_phone" type="text" value={phone} readOnly></input>
+                    <input type="button" style={{ backgroundColor: "lime", fontSize: "22px", lineHeight: "24px", paddingTop: "2px" }} value="🖉" onClick={addToday} />
+                    <input type="button" style={{ backgroundColor: "tomato", fontSize: "28px", lineHeight: "30px", paddingBottom: "4px" }} value="🗑" onClick={() => removeTime(time)} />
                 </div>
             ))
         }
@@ -57,8 +57,8 @@ function TodayPage() {
             <div style={{ display: "flex", alignItems: "center", flexFlow: "row", gap: "15px", width: "100%" }}>
                 <label htmlFor="today_add_time">Time</label>
                 <input id="today_add_time" type="text" value={newTime} placeholder={formatTime(false)} onChange={(e) => setNewTime(e.target.value)}></input>
-                <label htmlFor="today_add_name">Name</label>
-                <input id="today_add_time" type="text" value={newName} placeholder="-" onChange={(e) => setNewName(e.target.value)}></input>
+                <label htmlFor="today_add_patient">Patient</label>
+                <input id="today_add_patient" type="text" value={newName} placeholder="-" onChange={(e) => setNewName(e.target.value)}></input>
                 <label htmlFor="today_add_phone">Phone</label>
                 <input id="today_add_phone" type="text" value={newPhone} placeholder="-" onChange={(e) => setNewPhone(e.target.value)}></input>
                 <input type="button" style={{ backgroundColor: "lime", fontSize: "22px", lineHeight: "24px", paddingTop: "2px" }} value="✔" onClick={addToday} />

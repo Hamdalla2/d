@@ -98,8 +98,11 @@ input[type=text] {
   cursor: text;
 }
 
-input[readonly] {
-  background-color: red;
+input[readonly],
+input[readonly]:focus {
+  border: none;
+  cursor: default;
+  box-shadow: none;
 }
 
 input:-webkit-autofill,
