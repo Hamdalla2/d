@@ -67,6 +67,7 @@ input[type=button]:hover,
 input[type=submit]:hover,
 input[type=password]:hover,
 input[type=text]:hover,
+input[type=number]:focus,
 img:hover {
   opacity: 0.7;
 }
@@ -81,21 +82,28 @@ img:active {
 button:focus,
 input[type=button]:focus,
 input[type=submit]:focus,
+input[type=password]:focus,
+input[type=text]:focus,
+input[type=number]:focus,
 img:focus {
   box-shadow: 0 0 30px blue;
 }
 
-input[type=password]:focus,
-input[type=text]:focus {
-  box-shadow: 0 0 30px gold;
-}
 
 input[type=password],
-input[type=text] {
+input[type=text],
+input[type=number] {
   background-color: transparent;
   color: blue;
-  appearance: none;
   cursor: text;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 input[readonly],
