@@ -22,7 +22,6 @@ function TodayPage() {
     const [editingPhone, setEditingPhone] = useState("");
     const [currentTime, setCurrentTime] = useState(formatTime(true));
 
-
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentTime(formatTime(true));
@@ -69,6 +68,12 @@ function TodayPage() {
         setEditingPhone("")
     }
 
+    const formateNumber = (e, type) => {
+        e.target.value.replace(/[^0-9]/g, '')
+
+        if (type === "time") { return }
+    }
+
     return <div className="page" style={{ display: "flex", alignItems: "center", flexFlow: "column" }}>
         <div style={{ fontSize: "50px", lineHeight: "60px" }}>{currentTime}</div>
         {Object.values(times)?.length > 0 &&
@@ -77,11 +82,11 @@ function TodayPage() {
                     <div className="spacer"></div>
                     <div style={{ display: "flex", alignItems: "center", flexFlow: "row", gap: "15px", width: "100%" }}>
                         <label htmlFor="today_time">Time</label>
-                        <input id="today_time" type="text" onChange={(e) => setEditingTime(e.target.value)} value={editing === time ? editingTime || time : time} readOnly={editing !== time}></input>
+                        <input id="today_time" type="text" onChange={(e) => { setEditingTime(e.target.value).replace(/[^0-9]/g, '').slice(0, 4) }} value={editing === time ? editingTime || time : time} readOnly={editing !== time}></input>
                         <label htmlFor="today_patient">Patient</label>
-                        <input id="today_patient" type="text" onChange={(e) => setEditingPatient(e.target.value)} value={editing === time ? editingPatient || patient || "-" : patient || "-"} readOnly={editing !== time}></input>
+                        <input id="today_patient" type="text" onChange={(e) => setEditingPatient(e.target.value)} value={editing === time ? editingPatient || patient : patient || "-"} readOnly={editing !== time}></input>
                         <label htmlFor="today_phone">Phone</label>
-                        <input id="today_phone" type="number" onKeyDown={(e) => ["e", "E", "+", "-"].includes(e.key) && e.preventDefault()} onChange={(e) => setEditingPhone(e.target.value)} value={editing === time ? editingPhone || phone || "-" : phone || "-"} readOnly={editing !== time}></input>
+                        <input id="today_phone" type="text" onKeyDown={(e) => formateNumber(e, "phone")} onChange={(e) => setEditingPhone(e.target.value).replace(/[^0-9]/g, '').slice(0, 10)} value={editing === time ? editingPhone || phone : phone || "-"} readOnly={editing !== time}></input>
                         {editing !== time ?
                             (<>
                                 <input type="button" style={{ backgroundColor: "lime", fontSize: "22px", lineHeight: "24px", paddingTop: "2px" }} value="🖉" onClick={() => startEditing(time)} />
@@ -101,11 +106,11 @@ function TodayPage() {
         {adding && (
             <div style={{ display: "flex", alignItems: "center", flexFlow: "row", gap: "15px" }}>
                 <label htmlFor="today_add_time">Time</label>
-                <input id="today_add_time" type="text" value={addingTime} placeholder={formatTime(false)} onChange={(e) => setAddingTime(e.target.value)}></input>
+                <input id="today_add_time" type="text" value={addingTime} placeholder={formatTime(false)} onChange={(e) => { setAddingTime(e.target.value.replace(/[^0-9]/g, '').slice(0, 4)) }}></input>
                 <label htmlFor="today_add_patient">Patient</label>
                 <input id="today_add_patient" type="text" value={addingPatient} placeholder="-" onChange={(e) => setAddingPatient(e.target.value)}></input>
                 <label htmlFor="today_add_phone">Phone</label>
-                <input id="today_add_phone" type="number" value={addingPhone} placeholder="-" onChange={(e) => setAddingPhone(e.target.value)}></input>
+                <input id="today_add_phone" type="text" value={addingPhone} placeholder="-" onChange={(e) => setAddingPhone(e.target.value.replace(/[^0-9]/g, '').slice(0, 10))}></input>
                 <input type="button" style={{ backgroundColor: "lime", fontSize: "22px", lineHeight: "24px", paddingTop: "2px" }} value="✔" onClick={addToday} />
                 <input type="button" style={{ backgroundColor: "tomato", fontSize: "28px", lineHeight: "30px", paddingBottom: "2px" }} value="x" onClick={() => setAdding(!adding)} />
             </div>
