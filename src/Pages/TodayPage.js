@@ -1,27 +1,30 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
-function TodayPage() {
-    const formatTime = (includeSeconds = false, now) => {
-        if (!now) {
-            return "";
-        } else if (typeof now === "string") {
-            now = now.toString().replace(/\s*:\s*/g, "")
-            switch (now.length) {
-                case 3:
-                    return `${now[0] + now[1]} : ${now[2]}`
-                case 4:
-                    return `${now[0] + now[1]} : ${now[2] + now[3]}`
-                default:
-                    return now;
-            }
-        } else {
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            const seconds = now.getSeconds().toString().padStart(2, '0');
-            return includeSeconds ? `${hours} : ${minutes} : ${seconds}` : `${hours} : ${minutes}`;
+export const formatTime = (includeSeconds = false, time, editable = false) => {
+    if (!time) {
+        return "";
+    } else if (typeof time === "string") {
+        time = time.toString().replace(/\s*:\s*/g, "")
+        switch (time.length) {
+            case 1:
+                return editable ? time : `0${time} : 00`
+            case 2:
+                return editable ? time : `${time} : 00`
+            case 3:
+                return editable ? `${time[0] + time[1]} : ${time[2]}` : `${time[0] + time[1]} : ${time[2]}0`
+            default:
+                return `${time[0] + time[1]} : ${time[2] + time[3]}`
         }
-    };
+    } else {
+        const hours = time.getHours().toString().padStart(2, '0');
+        const minutes = time.getMinutes().toString().padStart(2, '0');
+        const seconds = time.getSeconds().toString().padStart(2, '0');
+        return includeSeconds ? `${hours} : ${minutes} : ${seconds}` : `${hours} : ${minutes}`;
+    }
+};
+
+function TodayPage() {
 
     const dispatch = useDispatch()
     const [times, setTimes] = useState({});
@@ -43,26 +46,8 @@ function TodayPage() {
     }, []);
 
     const addToday = () => {
-        let addedTime = "";
-        switch (addingTime.length) {
-            case 1:
-                addedTime = `0${addingTime} : 00`
-                break;
-            case 2:
-                addedTime = `${addingTime} : 00`
-                break;
-            case 3:
-                addedTime = `${addingTime[0] + addingTime[1]} : ${addingTime[2]}0`
-                break;
-            case 4:
-                addedTime = `${addingTime[0] + addingTime[1]} : ${addingTime[2] + addingTime[3]}`
-                break;
-            default:
-                addedTime = formatTime(false, new Date())
-        }
-        console.log(times)
-        if (!times[addedTime]) {
-            setTimes({ ...times, [addedTime]: { time: addedTime, patient: addingPatient, phone: addingPhone } });
+        if (!times[formatTime(false, addingTime || new Date())]) {
+            setTimes({ ...times, [formatTime(false, addingTime || new Date())]: { time: formatTime(false, addingTime || new Date()), patient: addingPatient, phone: addingPhone } });
             setAdding(false); setAddingTime(""); setAddingPatient(""); setAddingPhone("");
             // dispatch(setToday());
         }
@@ -113,7 +98,7 @@ function TodayPage() {
                     <div className="spacer"></div>
                     <div style={{ display: "flex", alignItems: "center", flexFlow: "row", gap: "15px", width: "100%" }}>
                         <label htmlFor="today_time">Time</label>
-                        <input id="today_time" type="text" onChange={(e) => { setEditingTime(e.target.value.replace(/[^0-9]/g, '').slice(0, 4)) }} placeholder={formatTime(false, new Date())} value={editing === time ? formatTime(false, editingTime) || formatTime(false, time) : formatTime(false, time)} readOnly={editing !== time}></input>
+                        <input id="today_time" type="text" onChange={(e) => { setEditingTime(e.target.value.replace(/[^0-9]/g, '').slice(0, 4)) }} placeholder={formatTime(false, new Date())} value={editing === time ? formatTime(false, editingTime || time, true) : formatTime(false, time)} readOnly={editing !== time}></input>
                         <label htmlFor="today_patient">Patient</label>
                         <input id="today_patient" type="text" placeholder="-" onChange={(e) => setEditingPatient(e.target.value)} value={editing === time ? editingPatient || patient : patient || "-"} readOnly={editing !== time}></input>
                         <label htmlFor="today_phone">Phone</label>
@@ -137,7 +122,7 @@ function TodayPage() {
         {adding && (
             <div style={{ display: "flex", alignItems: "center", flexFlow: "row", gap: "15px" }}>
                 <label htmlFor="today_add_time">Time</label>
-                <input id="today_add_time" type="text" value={formatTime(false, addingTime)} placeholder={formatTime(false, new Date())} onChange={(e) => { setAddingTime(e.target.value.replace(/[^0-9]/g, '').slice(0, 4)) }}></input>
+                <input id="today_add_time" type="text" value={formatTime(false, addingTime, true)} placeholder={formatTime(false, new Date())} onChange={(e) => { setAddingTime(e.target.value.replace(/[^0-9]/g, '').slice(0, 4)) }}></input>
                 <label htmlFor="today_add_patient">Patient</label>
                 <input id="today_add_patient" type="text" value={addingPatient} placeholder="-" onChange={(e) => setAddingPatient(e.target.value)}></input>
                 <label htmlFor="today_add_phone">Phone</label>
