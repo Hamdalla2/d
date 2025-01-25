@@ -6,6 +6,9 @@ export const formatTime = (includeSeconds = false, time, editable = false) => {
         return "";
     } else if (typeof time === "string") {
         time = time.toString().replace(/\s*:\s*/g, "")
+        if (time[0] > 2) { time = "2" + time.slice(1) }
+        if (time[0] + time[1] > 23) { time = "23" + time.slice(2) }
+        if (time[2] > 5) { time = time.slice(0, 2) + "5" + time.slice(3) }
         switch (time.length) {
             case 1:
                 return editable ? time : `0${time} : 00`
@@ -27,12 +30,8 @@ export const formatTime = (includeSeconds = false, time, editable = false) => {
 function TodayPage() {
 
     const dispatch = useDispatch()
-    const [times, setTimes] = useState({});
-    const [adding, setAdding] = useState(false);
-    const [addingTime, setAddingTime] = useState("");
-    const [addingPatient, setAddingPatient] = useState("");
-    const [addingPhone, setAddingPhone] = useState("");
-    const [editing, setEditing] = useState("");
+    const [times, setTimes] = useState([]);
+    const [editing, setEditing] = useState(null);
     const [editingTime, setEditingTime] = useState("");
     const [editingPatient, setEditingPatient] = useState("");
     const [editingPhone, setEditingPhone] = useState("");
@@ -45,12 +44,8 @@ function TodayPage() {
         return () => clearInterval(interval);
     }, []);
 
-    const addToday = () => {
-        if (!times[formatTime(false, addingTime || new Date())]) {
-            setTimes({ ...times, [formatTime(false, addingTime || new Date())]: { time: formatTime(false, addingTime || new Date()), patient: addingPatient, phone: addingPhone } });
-            setAdding(false); setAddingTime(""); setAddingPatient(""); setAddingPhone("");
-            // dispatch(setToday());
-        }
+    const addTime = () => {
+        setTimes([...times, { id: (times[times.length - 1]?.id || 0) + 1, time: "-", patient: "-", phone: "-", editing: true }])
     }
 
     const deleteTime = (time) => {
@@ -71,14 +66,14 @@ function TodayPage() {
             if (times[t].time === time) { delete times[t] }
             times[editingTime] = { time: editingTime, patient: editingPatient, phone: editingPhone }
         }
-        setEditing("")
+        setEditing(null)
         setEditingTime("")
         setEditingPatient("")
         setEditingPhone("")
     }
 
     const cancelEditing = () => {
-        setEditing("")
+        setEditing(null)
         setEditingTime("")
         setEditingPatient("")
         setEditingPhone("")
@@ -92,46 +87,32 @@ function TodayPage() {
 
     return <div className="page" style={{ display: "flex", alignItems: "center", flexFlow: "column" }}>
         <div style={{ fontSize: "50px", lineHeight: "60px" }}>{currentTime}</div>
-        {Object.values(times)?.length > 0 &&
-            (Object.values(times).map(({ time, patient, phone }, i) =>
-                <div key={i}>
-                    <div className="spacer"></div>
-                    <div style={{ display: "flex", alignItems: "center", flexFlow: "row", gap: "15px", width: "100%" }}>
-                        <label htmlFor="today_time">Time</label>
-                        <input id="today_time" type="text" onChange={(e) => { setEditingTime(e.target.value.replace(/[^0-9]/g, '').slice(0, 4)) }} placeholder={formatTime(false, new Date())} value={editing === time ? formatTime(false, editingTime || time, true) : formatTime(false, time)} readOnly={editing !== time}></input>
-                        <label htmlFor="today_patient">Patient</label>
-                        <input id="today_patient" type="text" placeholder="-" onChange={(e) => setEditingPatient(e.target.value)} value={editing === time ? editingPatient || patient : patient || "-"} readOnly={editing !== time}></input>
-                        <label htmlFor="today_phone">Phone</label>
-                        <input id="today_phone" type="text" placeholder="-" onKeyDown={(e) => formateNumber(e, "phone")} onChange={(e) => setEditingPhone(e.target.value.replace(/[^0-9]/g, '').slice(0, 10))} value={editing === time ? editingPhone || phone : phone || "-"} readOnly={editing !== time}></input>
-                        {editing !== time ?
-                            (<>
-                                <input type="button" style={{ backgroundColor: "lime", fontSize: "22px", lineHeight: "24px", paddingTop: "2px" }} value="🖉" onClick={() => startEditing(time)} />
-                                <input type="button" style={{ backgroundColor: "tomato", fontSize: "28px", lineHeight: "30px", paddingBottom: "4px" }} value="🗑" onClick={() => deleteTime(time)} />
-                            </>
-                            ) :
-                            (<>
-                                <input type="button" style={{ backgroundColor: "lime", fontSize: "22px", lineHeight: "24px", paddingTop: "2px" }} value="✔" onClick={() => saveEditing(time)} />
-                                <input type="button" style={{ backgroundColor: "tomato", fontSize: "28px", lineHeight: "30px", paddingBottom: "2px" }} value="x" onClick={() => cancelEditing()} />
-                            </>
-                            )}
-                    </div>
+        {times.map(({ id, time, patient, phone, editing }, i) =>
+            <div key={id}>
+                <div className="spacer"></div>
+                <div style={{ display: "flex", alignItems: "center", flexFlow: "row", gap: "15px", width: "100%" }}>
+                    <label htmlFor="today_time">Time</label>
+                    <input id="today_time" type="text" onChange={(e) => { setEditingTime(e.target.value.replace(/[^0-9]/g, '').slice(0, 4)) }} placeholder="-" value={editing === time ? formatTime(false, editingTime, true) : formatTime(false, time)} readOnly={editing !== time}></input>
+                    <label htmlFor="today_patient">Patient</label>
+                    <input id="today_patient" type="text" placeholder="-" onChange={(e) => setEditingPatient(e.target.value)} value={editing === time ? editingPatient || patient : patient || "-"} readOnly={editing !== time}></input>
+                    <label htmlFor="today_phone">Phone</label>
+                    <input id="today_phone" type="text" placeholder="-" onKeyDown={(e) => formateNumber(e, "phone")} onChange={(e) => setEditingPhone(e.target.value.replace(/[^0-9]/g, '').slice(0, 10))} value={editing === time ? editingPhone || phone : phone || "-"} readOnly={editing !== time}></input>
+                    {editing !== time ?
+                        (<>
+                            <input type="button" style={{ backgroundColor: "lime", fontSize: "22px", lineHeight: "24px", paddingTop: "2px" }} value="🖉" onClick={() => startEditing(time)} />
+                            <input type="button" style={{ backgroundColor: "tomato", fontSize: "28px", lineHeight: "30px", paddingBottom: "4px" }} value="🗑" onClick={() => deleteTime(time)} />
+                        </>
+                        ) :
+                        (<>
+                            <input type="button" style={{ backgroundColor: "lime", fontSize: "22px", lineHeight: "24px", paddingTop: "2px" }} value="✔" onClick={() => saveEditing(time)} />
+                            <input type="button" style={{ backgroundColor: "tomato", fontSize: "28px", lineHeight: "30px", paddingBottom: "2px" }} value="x" onClick={() => cancelEditing()} />
+                        </>
+                        )}
                 </div>
-            ))
-        }
-        <div className="spacer"></div>
-        {adding && (
-            <div style={{ display: "flex", alignItems: "center", flexFlow: "row", gap: "15px" }}>
-                <label htmlFor="today_add_time">Time</label>
-                <input id="today_add_time" type="text" value={formatTime(false, addingTime, true)} placeholder={formatTime(false, new Date())} onChange={(e) => { setAddingTime(e.target.value.replace(/[^0-9]/g, '').slice(0, 4)) }}></input>
-                <label htmlFor="today_add_patient">Patient</label>
-                <input id="today_add_patient" type="text" value={addingPatient} placeholder="-" onChange={(e) => setAddingPatient(e.target.value)}></input>
-                <label htmlFor="today_add_phone">Phone</label>
-                <input id="today_add_phone" type="text" value={addingPhone} placeholder="-" onChange={(e) => setAddingPhone(e.target.value.replace(/[^0-9]/g, '').slice(0, 10))}></input>
-                <input type="button" style={{ backgroundColor: "lime", fontSize: "22px", lineHeight: "24px", paddingTop: "2px" }} value="✔" onClick={addToday} />
-                <input type="button" style={{ backgroundColor: "tomato", fontSize: "28px", lineHeight: "30px", paddingBottom: "2px" }} value="x" onClick={() => setAdding(!adding)} />
             </div>
         )}
-        {!adding && <input type="button" style={{ backgroundColor: "lime", fontSize: "32px", lineHeight: "34px" }} value="+" onClick={() => setAdding(!adding)} />}
+        <div className="spacer"></div>
+        <input type="button" style={{ backgroundColor: "lime", fontSize: "32px", lineHeight: "34px" }} value="+" onClick={() => addTime()} />
     </div>;
 }
 
