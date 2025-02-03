@@ -23,7 +23,7 @@ export const formatTime = ({ time, includeSeconds = false, editable = false }) =
 function TodayPage() {
   const dispatch = useDispatch()
   const [times, setTimes] = useState([]);
-  const [editing, setEditing] = useState(null);
+  const [editingId, setEditingId] = useState(0);
   const [editingTime, setEditingTime] = useState("");
   const [editingPatient, setEditingPatient] = useState("");
   const [editingPhone, setEditingPhone] = useState("");
@@ -36,52 +36,26 @@ function TodayPage() {
     return () => clearInterval(interval)
   }, [])
 
-  const addTime = () => {
-    setTimes([...times, { id: (times[times.length - 1]?.id || 0) + 1, time: "", patient: "", phone: "", editable: true }])
-  }
-
-  const deleteTime = (time) => { }
-
-  const startEditing = (time) => {
-    setEditing(time)
-    setEditingTime(times[time]?.time)
-    setEditingPatient(times[time]?.patient)
-    setEditingPhone(times[time]?.phone)
-  }
-
-  const saveEditing = (time) => {
-    for (const t in times) {
-      if (times[t].time === time) { delete times[t] }
-      times[editingTime] = { time: editingTime, patient: editingPatient, phone: editingPhone }
-    }
-    setEditing(null)
-    setEditingTime("")
-    setEditingPatient("")
-    setEditingPhone("")
-  }
-
-  const cancelEditing = () => {
-    setEditing(null)
-    setEditingTime("")
-    setEditingPatient("")
-    setEditingPhone("")
-  }
-
+  const toggleEditing = (id) => { setEditingId(id); setEditingTime(""); setEditingPatient(""); setEditingPhone("") }
+  const addTime = () => { setTimes([...times, { id: (times[times.length - 1]?.id || 0) + 1, time: "", patient: "", phone: "" }]); toggleEditing((times[times.length - 1]?.id || 0) + 1) }
+  const deleteTime = (id) => { setTimes(prevItems => prevItems.filter((item) => item[id] !== id)) }
+  const saveEditing = (id) => { setTimes(prevItems => prevItems.map((item) => (item[id] === id ? (item[id] = { id: item[id], time: editingTime, patient: editingPatient, phone: editingPatient }, toggleEditing(0)) : item))) }
+  console.log(times, editingId)
   return (
     <div className="page" style={{ display: "flex", alignItems: "center", flexFlow: "column" }}    >
       <div style={{ fontSize: "50px", lineHeight: "60px" }}>{currentTime}</div>
-      {times.map(({ id, time, patient, phone, editable }, i) => (
+      {times.map(({ id, time, patient, phone }, i) => (
         <div key={id}>
           <div className="spacer"></div>
           <div style={{ display: "flex", alignItems: "center", flexFlow: "row", gap: "15px", width: "100%", }}>
             <label>Time</label>
-            <input type="text" onChange={(e) => { setEditingTime(e.target.value.replace(/[^0-9]/g, '').slice(0, 4)) }} value={formatTime({ time: editingTime || time, editable })} readOnly={!editable} />
+            <input type="text" placeholder="00 : 00" onChange={(e) => { setEditingTime(e.target.value.replace(/[^0-9]/g, '').slice(0, 4)) }} value={formatTime({ time: editingTime || time, editable: editingId !== id })} readOnly={editingId !== id} />
             <label>Patient</label>
-            <input type="text" placeholder="-" onChange={(e) => setEditingPatient(e.target.value)} value={editingPatient || patient} readOnly={!editable} />
+            <input type="text" placeholder="-" onChange={(e) => setEditingPatient(e.target.value)} value={editingPatient || patient} readOnly={editingId !== id} />
             <label>Phone</label>
-            <input type="text" placeholder="-" onChange={(e) => setEditingPhone(e.target.value.replace(/[^0-9]/g, '').slice(0, 4))} value={editingPhone || phone} readOnly={!editable} />
-            <input type="button" style={{ backgroundColor: "lime", fontSize: "22px", lineHeight: "24px", paddingTop: "2px" }} value={editable ? "✔" : "🖉"} onClick={() => editable ? saveEditing(time) : startEditing(time)} />
-            <input type="button" style={{ backgroundColor: "tomato", fontSize: "28px", lineHeight: "30px", paddingBottom: "4px" }} value={editable ? "X" : "🗑"} onClick={() => editable ? cancelEditing() : deleteTime(time)} />
+            <input type="text" placeholder="-" onChange={(e) => setEditingPhone(e.target.value.replace(/[^0-9]/g, '').slice(0, 4))} value={editingPhone || phone} readOnly={editingId !== id} />
+            <input type="button" style={{ backgroundColor: "lime", fontSize: "22px", lineHeight: "24px", paddingTop: "2px" }} value={editingId === id ? "✔" : "🖉"} onClick={() => editingId === id ? saveEditing(id) : toggleEditing(id)} />
+            <input type="button" style={{ backgroundColor: "tomato", fontSize: "28px", lineHeight: "30px", paddingBottom: "4px" }} value={editingId === id ? "X" : "🗑"} onClick={() => editingId === id ? toggleEditing(0) : deleteTime(id)} />
           </div>
         </div>
       ))}
